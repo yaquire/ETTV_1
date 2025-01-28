@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32510.428
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ETTV_1", "ETTV_1\ETTV_1.csproj", "{397727DA-3F08-400D-9B6F-FC41143B4EE6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{397727DA-3F08-400D-9B6F-FC41143B4EE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{397727DA-3F08-400D-9B6F-FC41143B4EE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{397727DA-3F08-400D-9B6F-FC41143B4EE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{397727DA-3F08-400D-9B6F-FC41143B4EE6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {11C9041B-476C-40F4-9492-6E1A128A14B1}
+	EndGlobalSection
+EndGlobal

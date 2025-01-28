@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+	<AddIn Type="Command">
+		<Name>ETTV_1</Name>
+		<Assembly>ETTV_1.dll</Assembly>
+		<AddInId>
+			A6C6B167-146D-4579-AF9D-0E231167E457
+		</AddInId>
+		<FullClassName>ETTV_1.ETTV_1</FullClassName>
+		<Text>ETTV_Calculation</Text>
+		<Description>ETTV_Calculation</Description>
+		<VendorId>ST</VendorId>
+		<VendorDescription>@SoluFix</VendorDescription>
+		<VisibilityMode>NotVisibleWhenNoActiveDocument</VisibilityMode>
+	</AddIn>
+	<AddIn Type="Command">
+		<Name>Get the Window-Room</Name>
+		<Assembly>ETTV_1.dll</Assembly>
+		<AddInId>
+			FE66452B-EEE9-4E95-940E-CB8CEACC412B
+		</AddInId>
+		<FullClassName>boundingBox.GetWindows</FullClassName>
+		<Text>Get the Window-Room</Text>
+		<Description>Get the Window-Room</Description>
+		<VendorId>yaq</VendorId>
+		<VendorDescription>@Yaq</VendorDescription>
+		<VisibilityMode>NotVisibleWhenNoActiveDocument</VisibilityMode>
+	</AddIn>
+</RevitAddIns>
+
