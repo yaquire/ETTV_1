@@ -23,6 +23,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using Application = Autodesk.Revit.ApplicationServices.Application;
 using View = Autodesk.Revit.DB.View;
+using Autodesk.Revit.UI.Events;
 
 
 namespace ETTV_1
@@ -549,7 +550,7 @@ namespace ETTV_1
 
             void UpdateProgress(int progressPercentage)
             {
-                progressDialog.UpdateProgress(progressPercentage, $"Progress: {progressPercentage}%"); 
+                progressDialog.UpdateProgress(progressPercentage, $"{progressPercentage}%"); 
             }
 
             UpdateProgress(0);
@@ -1028,6 +1029,10 @@ namespace ETTV_1
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+            UpdateProgress(40);
+            System.Threading.Thread.Sleep(500);
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////
             //////MAIN 1 for Walls ==> Find Wall Adjacency from AC Spaces
             foreach (Room room in ACSPList)
             {
@@ -1131,7 +1136,10 @@ namespace ETTV_1
                 }
                 DetermineAdjacentElementLengthsAndWallAreas(room);
             }
-
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+            UpdateProgress(60);
+            System.Threading.Thread.Sleep(500);
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////
             UpdateProgress(70);
             System.Threading.Thread.Sleep(500);
@@ -1144,7 +1152,7 @@ namespace ETTV_1
 
                 //Creating bounding box from room
                 BoundingBoxXYZ bb = room.get_BoundingBox(null);
-                Outline outline = new Outline(bb.Min, bb.Max);
+                Outline outline = new Outline(bb.Min,bb.Max);
                 BoundingBoxIntersectsFilter bbfilter = new BoundingBoxIntersectsFilter(outline);
 
                 //Clash check room bb with windows
@@ -1152,25 +1160,40 @@ namespace ETTV_1
                     .OfCategory(BuiltInCategory.OST_Windows)
                     .WhereElementIsNotElementType()
                     .WhereElementIsViewIndependent()
-                    .OfClass(typeof(FamilyInstance))
-                    .WherePasses(bbfilter);
+                    .OfClass(typeof(FamilyInstance));
 
                 //Create window list
+                if(room.LookupParameter("AC_Space").AsInteger()==1)
+                {
                 foreach (Element Wndw in bbFltElemCollector)
                 {
-                    WndwList.Add(Wndw);
+                    //TaskDialog.Show("A",$"{room.Name}~{Wndw.LookupParameter("ETTV_Room").AsValueString()}");
+                    if (Wndw.LookupParameter("ETTV_Room").AsValueString() == $"{room.Name}")
+                        WndwList.Add(Wndw);
+                }
+                }
+                //Runns windows, it attaches the window to the room
+                GetWindows makesWin_Room = new GetWindows();
+                Result GetWindowResult = makesWin_Room.Execute(commandData,ref message,elements);
+                if (GetWindowResult == Result.Succeeded)
+                {
+                    //TaskDialog.Show("Success","GetWindows executed successfully.");
+                }
+                else
+                {
+                    TaskDialog.Show("Error","GetWindows failed to execute.");
                 }
 
                 //Separate window list based on orientation 
-                foreach (Element Wndw in WndwList)
-                {
-                    using (Transaction trans = new Transaction(doc, "ETTV_1"))
-                    {
-                        trans.Start();
-                        Wndw.LookupParameter("ETTV_Room").Set(room.Name);
-                        trans.Commit();
-                    }
-                }
+                //foreach (Element Wndw in WndwList)
+                //{
+                //    using (Transaction trans = new Transaction(doc, "ETTV_1"))
+                //    {
+                //        trans.Start();
+                //        Wndw.LookupParameter("ETTV_Room").Set(room.Name);
+                //        trans.Commit();
+                //    }
+                //}
 
                 //Initialise parameters for window orientation 
                 N_WndwList = new List<Element>();
@@ -2162,8 +2185,10 @@ namespace ETTV_1
                         //////to get Area/U values//////
                         ElementType WallType = doc.GetElement(NWall.GetTypeId()) as ElementType;
 
-                        Parameter h = room.LookupParameter("Unbounded Height");
-                        double WallHgt = (h.AsDouble() * _footToMm) / 1000;
+                        BoundingBoxXYZ rBB = room.get_BoundingBox(null);
+                        double h = rBB.Max.Z - rBB.Min.Z;
+                        //Parameter h = room.LookupParameter("Unbounded Height");
+                        double WallHgt = (h * _footToMm) / 1000;
 
                         Parameter U = WallType.LookupParameter("Heat Transfer Coefficient (U)");
                         if (U == null)
@@ -2222,8 +2247,10 @@ namespace ETTV_1
                         //////to get Area/U values//////
                         ElementType WallType = doc.GetElement(SWall.GetTypeId()) as ElementType;
 
-                        Parameter h = room.LookupParameter("Unbounded Height");
-                        double WallHgt = (h.AsDouble() * _footToMm) / 1000;
+                        BoundingBoxXYZ rBB = room.get_BoundingBox(null);
+                        double h = rBB.Max.Z - rBB.Min.Z;
+                        //Parameter h = room.LookupParameter("Unbounded Height");
+                        double WallHgt = (h * _footToMm) / 1000;
 
                         Parameter U = WallType.LookupParameter("Heat Transfer Coefficient (U)");
                         if (U == null)
@@ -2280,8 +2307,10 @@ namespace ETTV_1
                         //////to get Area/U values//////
                         ElementType WallType = doc.GetElement(EWall.GetTypeId()) as ElementType;
 
-                        Parameter h = room.LookupParameter("Unbounded Height");
-                        double WallHgt = (h.AsDouble() * _footToMm) / 1000;
+                        BoundingBoxXYZ rBB = room.get_BoundingBox(null);
+                        double h = rBB.Max.Z - rBB.Min.Z;
+                        //Parameter h = room.LookupParameter("Unbounded Height");
+                        double WallHgt = (h * _footToMm) / 1000;
 
                         Parameter U = WallType.LookupParameter("Heat Transfer Coefficient (U)");
                         if (U == null)
@@ -2338,8 +2367,10 @@ namespace ETTV_1
                         //////to get Area/U values//////
                         ElementType WallType = doc.GetElement(WWall.GetTypeId()) as ElementType;
 
-                        Parameter h = room.LookupParameter("Unbounded Height");
-                        double WallHgt = (h.AsDouble() * _footToMm) / 1000;
+                        BoundingBoxXYZ rBB = room.get_BoundingBox(null);
+                        double h = rBB.Max.Z - rBB.Min.Z;
+                        //Parameter h = room.LookupParameter("Unbounded Height");
+                        double WallHgt = (h * _footToMm) / 1000;
 
                         Parameter U = WallType.LookupParameter("Heat Transfer Coefficient (U)");
                         if (U == null)
@@ -2396,8 +2427,10 @@ namespace ETTV_1
                         //////to get Area/U values//////
                         ElementType WallType = doc.GetElement(NEWall.GetTypeId()) as ElementType;
 
-                        Parameter h = room.LookupParameter("Unbounded Height");
-                        double WallHgt = (h.AsDouble() * _footToMm) / 1000;
+                        BoundingBoxXYZ rBB = room.get_BoundingBox(null);
+                        double h = rBB.Max.Z - rBB.Min.Z;
+                        //Parameter h = room.LookupParameter("Unbounded Height");
+                        double WallHgt = (h * _footToMm) / 1000;
 
                         Parameter U = WallType.LookupParameter("Heat Transfer Coefficient (U)");
                         if (U == null)
@@ -2453,9 +2486,10 @@ namespace ETTV_1
                     {
                         //////to get Area/U values//////
                         ElementType WallType = doc.GetElement(NWWall.GetTypeId()) as ElementType;
-
-                        Parameter h = room.LookupParameter("Unbounded Height");
-                        double WallHgt = (h.AsDouble() * _footToMm) / 1000;
+                        BoundingBoxXYZ rBB = room.get_BoundingBox(null);
+                        double h = rBB.Max.Z - rBB.Min.Z;
+                        //Parameter h = room.LookupParameter("Unbounded Height");
+                        double WallHgt = (h * _footToMm) / 1000;
 
                         Parameter U = WallType.LookupParameter("Heat Transfer Coefficient (U)");
                         if (U == null)
@@ -2511,9 +2545,10 @@ namespace ETTV_1
                     {
                         //////to get Area/U values//////
                         ElementType WallType = doc.GetElement(SEWall.GetTypeId()) as ElementType;
-
-                        Parameter h = room.LookupParameter("Unbounded Height");
-                        double WallHgt = (h.AsDouble() * _footToMm) / 1000;
+                        BoundingBoxXYZ rBB = room.get_BoundingBox(null);
+                        double h = rBB.Max.Z-rBB.Min.Z;
+                        //Parameter h = room.LookupParameter("Unbounded Height");
+                        double WallHgt = (h * _footToMm) / 1000;
 
                         Parameter U = WallType.LookupParameter("Heat Transfer Coefficient (U)");
                         if (U == null)
@@ -2569,10 +2604,10 @@ namespace ETTV_1
                     {
                         //////to get Area/U values//////
                         ElementType WallType = doc.GetElement(SWWall.GetTypeId()) as ElementType;
-
-                        Parameter h = room.LookupParameter("Unbounded Height");
-                        double WallHgt = (h.AsDouble() * _footToMm) / 1000;
-
+                        BoundingBoxXYZ rBB = room.get_BoundingBox(null);
+                        double h = rBB.Max.Z - rBB.Min.Z;
+                        //Parameter h = room.LookupParameter("Unbounded Height");
+                        double WallHgt = (h * _footToMm) / 1000;
                         Parameter U = WallType.LookupParameter("Heat Transfer Coefficient (U)");
                         if (U == null)
                         {
@@ -2620,6 +2655,7 @@ namespace ETTV_1
                     uidoc.Selection.SetElementIds(ids_3);
                 }
                 //////////////////////////////////Original Code Ends Here////////////////////////////////////////////
+
             }
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -19,7 +19,7 @@
 		<AddInId>
 			FE66452B-EEE9-4E95-940E-CB8CEACC412B
 		</AddInId>
-		<FullClassName>boundingBox.GetWindows</FullClassName>
+		<FullClassName>ETTV_1.GetWindows</FullClassName>
 		<Text>Get the Window-Room</Text>
 		<Description>Get the Window-Room</Description>
 		<VendorId>yaq</VendorId>
