@@ -153,7 +153,8 @@ namespace ETTV_1
           // Get the boundary segments of the room
           IList<IList<BoundarySegment>> boundaries = room.GetBoundarySegments(new SpatialElementBoundaryOptions());
           BoundingBoxXYZ roomBB = room.get_BoundingBox(null);
-          midHeight = (roomBB.Max.Z - roomBB.Min.Z)/2;
+          double height = roomBB.Max.Z - roomBB.Min.Z;
+          midHeight = height/2;
           if (boundaries != null)
           {
             foreach (IList<BoundarySegment> boundarySegmentList in boundaries)
@@ -179,6 +180,8 @@ namespace ETTV_1
                   Curve newCurve = curve.CreateTransformed(translationTransform);
                   newCurve = Make1Futher(newCurve);
                   // Output the details of the original and new curve
+                  double length = curve.Length;
+                  double area = length * height;
                   
                   ExteriorWalls.Add((elementId,newCurve, room));
                 }
